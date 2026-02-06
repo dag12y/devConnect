@@ -9,6 +9,9 @@ import userRouter from "./routes/api/users.js";
 const app =express()
 const port = process.env.PORT || 5000
 
+//middleware
+app.use(express.json())
+
 //connect db
 connectDB()
 

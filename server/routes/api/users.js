@@ -1,11 +1,17 @@
 import express from "express";
+import { check } from "express-validator";
+
+import {registerUser} from '../../controllers/user.controller.js'
 
 const router = express.Router();
 
-//@route Get api/users
+//@route Post api/users
+//desc Register User
 //@access Public
-router.get("/", (req, res) => {
-    res.send("User Route");
-});
+router.post("/",[
+    check("name", "Name is required").not().isEmpty(),
+    check("email", "Please include a valid email").isEmail(),
+    check("password", "Please enter a password with 6 or more characters").isLength({ min: 6 })
+], registerUser);
 
 export default router;
