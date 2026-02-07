@@ -1,7 +1,7 @@
 import express from "express";
 import { check } from "express-validator";
 
-import {registerUser} from '../../controllers/user.controller.js'
+import registerUser from '../../controllers/user.controller.js'
 
 const router = express.Router();
 
