@@ -1,7 +1,9 @@
 import { validationResult } from "express-validator";
 import gravatar from "gravatar";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import config from "config";
 
 export async function registerUser(req, res) {
     const errors = validationResult(req);
@@ -16,7 +18,8 @@ export async function registerUser(req, res) {
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({
-                errors:[{msg: "User already exists"}],
+                success: false,
+                errors: [{ msg: "User already exists" }],
             });
         }
 
@@ -42,11 +45,26 @@ export async function registerUser(req, res) {
         // save
         await user.save();
 
-        return res.status(201).json({ message: "User registered" });
+        //return jwt
+        const payload = {
+            user: {
+                id: user._id,
+            },
+        };
+        const jwtSecret = config.get("jwtSecret");
+        jwt.sign(payload, jwtSecret, { expiresIn: "24h" }, (err, token) => {
+            if (err) throw err;
+
+            res.status(201).json({
+                success: true,
+                token,
+            });
+        });
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({
-            message: "Server error",
+            success: false,
+            errors: [{ msg: "Server error" }],
         });
     }
 }
