@@ -1,6 +1,6 @@
 import express from "express";
 import authMiddleware from '../../middleware/auth.middleware.js'
-import { getProfile,uploadProfile ,getAllProfile,getProfileByUserId} from "../../controllers/profile.controller.js";
+import { getProfile,uploadProfile ,getAllProfile,getProfileByUserId,deleteProfile} from "../../controllers/profile.controller.js";
 import { check } from "express-validator";
 
 const router = express.Router();
@@ -29,8 +29,10 @@ router.get("/", getAllProfile);
 //@access Public
 router.get("/:user_id", getProfileByUserId);
 
-
-
+//@route Delete api/profile
+//@desc delete profile,user & posts
+//@access Private
+router.delete("/", authMiddleware, deleteProfile);
 
 
 export default router;

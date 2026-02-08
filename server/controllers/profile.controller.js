@@ -1,4 +1,5 @@
 import Profile from "../models/Profile.js";
+import User from "../models/User.js";
 import { validationResult } from "express-validator";
 
 export async function getProfile(req, res) {
@@ -136,4 +137,22 @@ export async function getProfileByUserId(req,res) {
         
     }
     
+}
+
+export async function deleteProfile(req, res) {
+    try {
+        // remove profile
+        await Profile.findOneAndDelete({ user: req.user.id });
+
+        // remove user
+        await User.findOneAndDelete({ _id: req.user.id });
+
+        return res.json({ success: true, msg: "User deleted" });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            errors: [{ msg: "Server Error" }],
+        });
+    }
 }
