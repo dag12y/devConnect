@@ -17,7 +17,6 @@ router.get("/", authMiddleware, getUser);
 //@access Public
 router.post(
     "/",
-    authMiddleware,
     [
         check("email", "Please include a valid email").isEmail(),
         check(
