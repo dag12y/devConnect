@@ -94,3 +94,46 @@ export async function uploadProfile(req, res) {
     }
 
 }
+
+
+export async function getAllProfile(req,res) {
+    try {
+        const profiles = await Profile.find().populate("user", ["name", "avatar"]);
+        return res.json({ success: true, data: profiles });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            errors: [{ msg: "Server Error" }],
+        });
+        
+    }
+    
+}
+
+export async function getProfileByUserId(req,res) {
+    try {
+        const profile = await Profile.findOne({ user: req.params.user_id }).populate("user", ["name", "avatar"]);
+        if (!profile) {
+            return res.status(400).json({
+                success: false,
+                errors: [{ msg: "Profile not found" }],
+            });
+        }
+        return res.json({ success: true, data: profile });
+    } catch (error) {
+        console.error(error.message);
+        if (error.kind === "ObjectId") {
+            return res.status(400).json({
+                success: false,
+                errors: [{ msg: "Profile not found" }],
+            });
+        }
+        return res.status(500).json({
+            success: false,
+            errors: [{ msg: "Server Error" }],
+        });
+        
+    }
+    
+}
