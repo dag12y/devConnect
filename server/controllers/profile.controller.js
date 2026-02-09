@@ -1,6 +1,8 @@
 import Profile from "../models/Profile.js";
 import User from "../models/User.js";
 import { validationResult } from "express-validator";
+import axios from "axios";
+import config from "config";
 
 export async function getProfile(req, res) {
     try {
@@ -275,3 +277,40 @@ export async function deleteEducation(req, res) {
         });
     }
 };
+
+
+export async function getGithubRepos(req, res) {
+    try {
+        const username = req.params.username;
+        const perPage = 5;
+        const sort = "created:asc";
+
+        const response = await axios.get(
+            `https://api.github.com/users/${username}/repos`,
+            {
+                params: {
+                    per_page: perPage,
+                    sort: sort,
+                    client_id: config.get("githubClientId"),
+                    client_secret: config.get("githubSecret"),
+                },
+                headers: { "User-Agent": "node.js" },
+            },
+        );
+
+        return res.json({ success: true, data: response.data });
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
+            return res.status(404).json({
+                success: false,
+                errors: [{ msg: "No Github profile found" }],
+            });
+        }
+
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            errors: [{ msg: "Server Error" }],
+        });
+    }
+}

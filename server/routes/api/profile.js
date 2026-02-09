@@ -10,6 +10,7 @@ import {
     deleteExperience,
     addEducation,
     deleteEducation,
+    getGithubRepos
 } from "../../controllers/profile.controller.js";
 import { check } from "express-validator";
 
@@ -87,5 +88,10 @@ router.put(
 // @desc Delete education from profile
 // @access Private
 router.delete("/education/:edu_id", authMiddleware, deleteEducation);
+
+//@route Get api/profile/github/:username
+// @desc Get user repos from Github
+// @access Public
+router.get("/github/:username", getGithubRepos);
 
 export default router;
