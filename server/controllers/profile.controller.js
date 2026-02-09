@@ -190,3 +190,27 @@ export async function addExperience(req, res) {
         
     }
 }
+
+export async function deleteExperience(req, res) {
+    try {
+        const profile = await Profile.findOne({ user: req.user.id }); 
+        const removeIndex = profile.experience
+            .map((item) => item.id)
+            .indexOf(req.params.exp_id);
+        if (removeIndex === -1) {
+            return res.status(400).json({
+                success: false,
+                errors: [{ msg: "Experience not found" }],
+            });
+        }
+        profile.experience.splice(removeIndex, 1);
+        await profile.save();
+        return res.json({ success: true, data: profile });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            errors: [{ msg: "Server Error" }],
+        });
+    }
+};

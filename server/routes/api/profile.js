@@ -7,6 +7,7 @@ import {
     getProfileByUserId,
     deleteProfile,
     addExperience,
+    deleteExperience
 } from "../../controllers/profile.controller.js";
 import { check } from "express-validator";
 
@@ -59,5 +60,12 @@ router.put(
     ],
     addExperience,
 );
+
+// @route Delete api/profile/experience/:exp_id
+// @desc Delete experience from profile
+// @access Private
+router.delete("/experience/:exp_id", authMiddleware,deleteExperience);
+
+
 
 export default router;
