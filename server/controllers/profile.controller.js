@@ -214,3 +214,64 @@ export async function deleteExperience(req, res) {
         });
     }
 };
+
+export async function addEducation(req, res) {
+    const errors = validationResult(req); 
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            success: false,
+            errors: errors.array(),
+        });
+    }
+
+    const { school, degree, fieldofstudy, from, to, current, description } =
+        req.body;
+    const newEdu = {
+        school,
+        degree,
+        fieldofstudy,
+        from,
+        to,
+        current,
+        description,
+    };
+
+    try {
+        const profile = await Profile.findOne({ user: req.user.id });
+        profile.education.unshift(newEdu);
+        await profile.save();
+        return res.json({ success: true, data: profile });
+        
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            errors: [{ msg: "Server Error" }],
+        });
+        
+    }
+};
+
+export async function deleteEducation(req, res) {
+    try {
+        const profile = await Profile.findOne({ user: req.user.id });
+        const removeIndex = profile.education
+            .map((item) => item.id)
+            .indexOf(req.params.edu_id);
+        if (removeIndex === -1) {
+            return res.status(400).json({
+                success: false,
+                errors: [{ msg: "Education not found" }],
+            });
+        }
+        profile.education.splice(removeIndex, 1);
+        await profile.save();
+        return res.json({ success: true, data: profile });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+            success: false,
+            errors: [{ msg: "Server Error" }],
+        });
+    }
+};

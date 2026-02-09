@@ -7,7 +7,9 @@ import {
     getProfileByUserId,
     deleteProfile,
     addExperience,
-    deleteExperience
+    deleteExperience,
+    addEducation,
+    deleteEducation,
 } from "../../controllers/profile.controller.js";
 import { check } from "express-validator";
 
@@ -64,8 +66,26 @@ router.put(
 // @route Delete api/profile/experience/:exp_id
 // @desc Delete experience from profile
 // @access Private
-router.delete("/experience/:exp_id", authMiddleware,deleteExperience);
+router.delete("/experience/:exp_id", authMiddleware, deleteExperience);
 
+// @route Put api/profile/education
+// @desc Add profile education
+// @access Private
+router.put(
+    "/education",
+    authMiddleware,
+    [
+        check("school", "School is required").not().isEmpty(),
+        check("degree", "Degree is required").not().isEmpty(),
+        check("fieldofstudy", "Field of study is required").not().isEmpty(),
+        check("from", "From date is required").not().isEmpty(),
+    ],
+    addEducation,
+);
 
+//@route Delete api/profile/education/:edu_id
+// @desc Delete education from profile
+// @access Private
+router.delete("/education/:edu_id", authMiddleware, deleteEducation);
 
 export default router;
