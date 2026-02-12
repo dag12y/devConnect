@@ -1,11 +1,13 @@
 import express from "express";
+import { check } from "express-validator";
+import authMiddleware from "../../middleware/auth.middleware.js";
+import { createPost } from "../../controllers/post.controller.js";
 
 const router = express.Router();
 
-//@route Get api/posts
-//@access Public
-router.get("/", (req, res) => {
-    res.send("Posts Route");
-});
+//@route Post api/posts
+//@desc Create a post
+//@access Private
+router.post("/", authMiddleware,[check("text", "Text is required").not().isEmpty()],createPost);
 
 export default router;
