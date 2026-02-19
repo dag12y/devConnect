@@ -76,3 +76,65 @@ export async function deletePost(req, res) {
         res.status(500).send("Server Error");
     }
 }
+
+export async function likePost(req, res) {
+    try {
+        const post = await Post.findById(req.params.id);
+
+        if (!post) {
+            return res.status(404).json({ msg: "Post not found" });
+        }
+
+        // Check if the post has already been liked by this user
+        if (post.likes.some((like) => like.user.toString() === req.user.id)) {
+            return res.status(400).json({ msg: "Post already liked" });
+        }
+
+        post.likes.unshift({ user: req.user.id });
+
+        await post.save();
+
+        res.json(post.likes);
+    } catch (err) {
+        console.error(err.message);
+
+        // Handle malformed ObjectIds
+        if (err.kind === "ObjectId") {
+            return res.status(404).json({ msg: "Post not found" });
+        }
+
+        res.status(500).send("Server Error");
+    }
+}
+
+export async function unlikePost(req,res) {
+    try {
+        const post = await Post.findById(req.params.id);
+        if (!post) {
+            return res.status(404).json({ msg: "Post not found" });
+        }
+
+        //check if post is already liked by this user
+        if (!post.likes.some((like) => like.user.toString() === req.user.id)) {
+            return res.status(400).json({ msg: "Post has not yet been liked" });
+        }
+
+        //remove the like
+        post.likes = post.likes.filter(
+            (like) => like.user.toString() !== req.user.id
+        );
+
+        await post.save();
+        
+        res.json(post.likes);
+    } catch (error) {
+        console.error(err.message);
+
+        // Handle malformed ObjectIds
+        if (err.kind === "ObjectId") {
+            return res.status(404).json({ msg: "Post not found" });
+        }
+
+        res.status(500).send("Server Error");
+    }
+}
