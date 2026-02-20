@@ -94,7 +94,7 @@ export async function likePost(req, res) {
 
         await post.save();
 
-        res.json(post.likes);
+        res.json({ message: "Post liked", likes: post.likes });
     } catch (err) {
         console.error(err.message);
 
@@ -107,7 +107,7 @@ export async function likePost(req, res) {
     }
 }
 
-export async function unlikePost(req,res) {
+export async function unlikePost(req, res) {
     try {
         const post = await Post.findById(req.params.id);
         if (!post) {
@@ -121,13 +121,52 @@ export async function unlikePost(req,res) {
 
         //remove the like
         post.likes = post.likes.filter(
-            (like) => like.user.toString() !== req.user.id
+            (like) => like.user.toString() !== req.user.id,
         );
 
         await post.save();
-        
-        res.json(post.likes);
+
+        res.json({ message: "Post unliked", likes: post.likes });
     } catch (error) {
+        console.error(error.message);
+
+        // Handle malformed ObjectIds
+        if (error.kind === "ObjectId") {
+            return res.status(404).json({ msg: "Post not found" });
+        }
+
+        res.status(500).send("Server Error");
+    }
+}
+
+export async function commentOnPost(req, res) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+        // Check if post exists
+        const post = await Post.findById(req.params.id);
+        if (!post) {
+            return res.status(404).json({ msg: "Post not found" });
+        }
+
+        // Get user details
+        const user = await User.findById(req.user.id).select("-password");
+
+        const newComment = {
+            text: req.body.text,
+            name: user.name,
+            avatar: user.avatar,
+            user: req.user.id,
+        };
+
+        post.comments.unshift(newComment);
+
+        await post.save();
+
+        res.json({ message: "Comment added", comments: post.comments });
+    } catch (err) {
         console.error(err.message);
 
         // Handle malformed ObjectIds
@@ -135,6 +174,43 @@ export async function unlikePost(req,res) {
             return res.status(404).json({ msg: "Post not found" });
         }
 
+        res.status(500).send("Server Error");
+    }
+}
+export async function deleteComment(req, res) {
+    try {
+        const post = await Post.findById(req.params.id);
+        if (!post) {
+            return res.status(404).json({ msg: "Post not found" });
+        }
+
+        // Find the comment
+        const comment = post.comments.find(
+            (c) => c.id === req.params.comment_id,
+        );
+
+        if (!comment) {
+            return res.status(404).json({ msg: "Comment does not exist" });
+        }
+
+        // Check if user is authorized
+        if (comment.user.toString() !== req.user.id) {
+            return res.status(401).json({ msg: "User not authorized" });
+        }
+
+        // Remove comment using filter
+        post.comments = post.comments.filter(
+            (c) => c.id !== req.params.comment_id,
+        );
+
+        await post.save();
+
+        res.json({ message: "Comment removed", comments: post.comments });
+    } catch (err) {
+        console.error(err.message);
+        if (err.kind === "ObjectId") {
+            return res.status(404).json({ msg: "Post not found" });
+        }
         res.status(500).send("Server Error");
     }
 }
