@@ -1,34 +1,28 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { UserPlus } from "lucide-react";
-import {toast} from 'sonner'
+import { toast } from "sonner";
 
 export default function Register() {
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        password2: "",
+    });
 
-	const [formData, setFormData] = useState({
-		name: "",
-		email: "",
-		password: "",
-		password2: "",
-	});
+    const { name, email, password, password2 } = formData;
 
-	const { name, email, password, password2 } = formData;
-
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
-		if (password !== password2) {
-			toast.error("Passwords do not match");
-			return;
-		}
-        console.log(formData);
-        setFormData({
-            name: "",
-            email: "",
-            password: "",
-            password2: ""
-        });
-    }
 
+        if (password !== password2) {
+            toast.error("Passwords do not match");
+            return;
+        }
+        const userData = { name, email, password };
+        console.log(userData);
+    }
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-12">
             <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
@@ -58,7 +52,12 @@ export default function Register() {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Enter your full name"
                             value={formData.name}
-                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    name: e.target.value,
+                                })
+                            }
                         />
                     </div>
 
@@ -77,7 +76,12 @@ export default function Register() {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Enter your email"
                             value={formData.email}
-                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    email: e.target.value,
+                                })
+                            }
                         />
                     </div>
 
@@ -97,7 +101,12 @@ export default function Register() {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Enter password"
                             value={formData.password}
-                            onChange={(e) => setFormData({...formData, password: e.target.value})}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    password: e.target.value,
+                                })
+                            }
                         />
                     </div>
 
@@ -117,7 +126,12 @@ export default function Register() {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Confirm password"
                             value={formData.password2}
-                            onChange={(e) => setFormData({...formData, password2: e.target.value})}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    password2: e.target.value,
+                                })
+                            }
                         />
                     </div>
 
