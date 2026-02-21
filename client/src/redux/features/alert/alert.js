@@ -1,15 +1,19 @@
-import { addAlert, removeAlert } from "./alertSlice";
+import { toast } from "sonner";
 
-export function setAlert(msg, alertType = "info", timeout = 5000) {
-    return function (dispatch) {
-        const action = addAlert(msg, alertType);
-        dispatch(action);
-
-        const { id } = action.payload;
-        setTimeout(function () {
-            dispatch(removeAlert(id));
-        }, timeout);
+export function setAlert(msg, alertType = "info") {
+    return function () {
+        if (alertType === "error") {
+            toast.error(msg);
+            return;
+        }
+        if (alertType === "success") {
+            toast.success(msg);
+            return;
+        }
+        if (alertType === "warning") {
+            toast.warning(msg);
+            return;
+        }
+        toast.info(msg);
     };
 }
-
-export { removeAlert };

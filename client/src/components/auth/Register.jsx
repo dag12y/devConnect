@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { UserPlus } from "lucide-react";
-import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { setAlert } from "../../redux/features/alert/alert";
 
 export default function Register() {
+    const dispatch = useDispatch();
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -11,17 +14,17 @@ export default function Register() {
         password2: "",
     });
 
-    const { name, email, password, password2 } = formData;
+    const { password, password2 } = formData;
 
     async function handleSubmit(e) {
         e.preventDefault();
 
         if (password !== password2) {
-            toast.error("Passwords do not match");
+            dispatch(setAlert("Passwords do not match", "error"));
             return;
         }
-        const userData = { name, email, password };
-        console.log(userData);
+        dispatch(setAlert("Registration form is valid", "success"));
+
         setFormData({
             name: "",
             email: "",
