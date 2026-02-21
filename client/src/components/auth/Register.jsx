@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { UserPlus } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../../redux/features/alert/alert";
+import { register } from "../../redux/features/auth/auth";
 
 export default function Register() {
     const dispatch = useDispatch();
@@ -14,7 +15,7 @@ export default function Register() {
         password2: "",
     });
 
-    const { password, password2 } = formData;
+    const { name, email, password, password2 } = formData;
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -23,14 +24,15 @@ export default function Register() {
             dispatch(setAlert("Passwords do not match", "error"));
             return;
         }
-        dispatch(setAlert("Registration form is valid", "success"));
-
-        setFormData({
-            name: "",
-            email: "",
-            password: "",
-            password2: "",
-        });
+        const didRegister = await dispatch(register({ name, email, password }));
+        if (didRegister) {
+            setFormData({
+                name: "",
+                email: "",
+                password: "",
+                password2: "",
+            });
+        }
     }
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-12">
