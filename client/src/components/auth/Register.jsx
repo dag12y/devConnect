@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
@@ -22,6 +22,12 @@ export default function Register() {
         }
         const userData = { name, email, password };
         console.log(userData);
+        setFormData({
+            name: "",
+            email: "",
+            password: "",
+            password2: "",
+        });
     }
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-12">
