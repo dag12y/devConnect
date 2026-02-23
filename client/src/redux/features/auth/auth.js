@@ -5,6 +5,7 @@ import {
     registerSuccess,
     loginSuccess,
     userLoaded,
+    userLoggedOut,
     authError,
 } from "./authSlice";
 
@@ -69,5 +70,13 @@ export function login(formData) {
             dispatch(authError(messages.join(", ")));
             return false;
         }
+    };
+}
+
+export function logout() {
+    return function (dispatch) {
+        localStorage.removeItem("token");
+        dispatch(userLoggedOut());
+        dispatch(setAlert("Logged out successfully", "success"));
     };
 }

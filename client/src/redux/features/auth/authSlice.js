@@ -34,6 +34,13 @@ const authSlice = createSlice({
             state.loading = false;
             state.error = null;
         },
+        userLoggedOut(state) {
+            state.user = null;
+            state.token = null;
+            state.isAuthenticated = false;
+            state.loading = false;
+            state.error = null;
+        },
         authError(state, action) {
             state.user = null;
             state.token = null;
@@ -44,7 +51,13 @@ const authSlice = createSlice({
     },
 });
 
-export const { authRequest, registerSuccess, loginSuccess, userLoaded, authError } =
-    authSlice.actions;
+export const {
+    authRequest,
+    registerSuccess,
+    loginSuccess,
+    userLoaded,
+    userLoggedOut,
+    authError,
+} = authSlice.actions;
 
 export default authSlice.reducer;
