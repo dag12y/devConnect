@@ -1,4 +1,4 @@
-import { Link ,useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Code2, Users, LogIn, UserPlus } from "lucide-react";
 import { logout } from "../../redux/features/auth/auth";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,8 +9,8 @@ export default function Navbar() {
     const isAuthenticated = useSelector(function (state) {
         return state.auth.isAuthenticated;
     });
-    const loading = useSelector(function (state) { 
-               return state.auth.loading;
+    const loading = useSelector(function (state) {
+        return state.auth.loading;
     });
 
     function handleLogout() {

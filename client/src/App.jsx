@@ -8,6 +8,8 @@ import { Toaster } from "sonner";
 import { Provider, useDispatch } from "react-redux";
 import store from "./redux/app/store";
 import { loadUser } from "./redux/features/auth/auth";
+import Dashboard from "./components/dashboard/Dashboard";
+import ProtectedRoute from "./components/routing/ProtectedRoute";
 
 function AppContent() {
     const dispatch = useDispatch();
@@ -28,6 +30,14 @@ function AppContent() {
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
             </Routes>
         </Router>
     );
