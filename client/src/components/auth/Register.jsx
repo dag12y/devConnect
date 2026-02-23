@@ -4,9 +4,11 @@ import { UserPlus } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../../redux/features/alert/alert";
 import { register } from "../../redux/features/auth/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         name: "",
@@ -32,6 +34,7 @@ export default function Register() {
                 password: "",
                 password2: "",
             });
+            navigate("/dashboard");
         }
     }
     return (

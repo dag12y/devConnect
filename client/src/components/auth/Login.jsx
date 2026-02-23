@@ -1,16 +1,25 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { LogIn } from "lucide-react";
+import { login } from "../../redux/features/auth/auth";
+import { useDispatch ,} from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
     const [formData, setFormData] = useState({ email: "", password: "" });
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const { email, password } = formData;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(formData);
-        setFormData({ email: "", password: "" });
+        const result = await dispatch(login(formData));
+        if (result) {
+            setFormData({ email: "", password: "" });
+            navigate("/dashboard");
+        }
     };
 
     return (

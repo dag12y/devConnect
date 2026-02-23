@@ -1,6 +1,12 @@
 import axiosInstance, { extractErrorMessages } from "../../../utils/axiosInstance";
 import { setAlert } from "../alert/alert";
-import { authRequest, registerSuccess, userLoaded, authError } from "./authSlice";
+import {
+    authRequest,
+    registerSuccess,
+    loginSuccess,
+    userLoaded,
+    authError,
+} from "./authSlice";
 
 export function loadUser() {
     return async function (dispatch) {
@@ -29,6 +35,30 @@ export function register(formData) {
             dispatch(registerSuccess({ token }));
             await dispatch(loadUser());
             dispatch(setAlert("Registration successful", "success"));
+            return true;
+        } catch (error) {
+            const messages = extractErrorMessages(error);
+            messages.forEach(function (msg) {
+                dispatch(setAlert(msg, "error"));
+            });
+            localStorage.removeItem("token");
+            dispatch(authError(messages.join(", ")));
+            return false;
+        }
+    };
+}
+
+export function login(formData) {
+    return async function (dispatch) {
+        dispatch(authRequest());
+        try {
+            const response = await axiosInstance.post("/auth", formData);
+
+            const { token } = response.data;
+            localStorage.setItem("token", token);
+            dispatch(loginSuccess({ token }));
+            await dispatch(loadUser());
+            dispatch(setAlert("Login successful", "success"));
             return true;
         } catch (error) {
             const messages = extractErrorMessages(error);
