@@ -19,14 +19,24 @@ export default function Navbar() {
     }
 
     const authLinks = (
-        <button
-            type="button"
-            onClick={handleLogout}
-            className="flex items-center gap-2 hover:text-blue-400 transition-colors"
-        >
-            <LogIn className="w-5 h-5" />
-            <span>Logout</span>
-        </button>
+        <>
+            <button
+                type="button"
+                onClick={() => navigate("/dashboard")}
+                className="flex items-center gap-2 hover:text-blue-400 transition-colors"
+            >
+                <Users className="w-5 h-5" />
+                <span>Dashboard</span>
+            </button>
+            <button
+                type="button"
+                onClick={handleLogout}
+                className="flex items-center gap-2 hover:text-blue-400 transition-colors"
+            >
+                <LogIn className="w-5 h-5" />
+                <span>Logout</span>
+            </button>
+        </>
     );
 
     const guestLinks = (

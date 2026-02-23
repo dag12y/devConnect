@@ -1,7 +1,30 @@
 import { Link } from "react-router-dom";
 import { Code2, Users, TrendingUp, MessageSquare } from "lucide-react";
+import {useSelector} from 'react-redux'
 
 export default function Landing() {
+    const isAuthenticated = useSelector(function (state) {
+        return state.auth.isAuthenticated;
+    });
+    if (isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center">
+                <div className="text-center text-white">
+                    <h1 className="text-4xl font-bold mb-6">Welcome Back!</h1>
+                    <p className="text-xl mb-4">
+                        Explore your profile, share updates, and connect with
+                        other developers.
+                    </p>
+                    <Link
+                        to="/dashboard"
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors mt-6 inline-block"
+                    >
+                        Go to Dashboard
+                    </Link>
+                </div>
+            </div>
+        );
+    }
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
             {/* Hero Section */}

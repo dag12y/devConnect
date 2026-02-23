@@ -8,6 +8,7 @@ import {
     userLoggedOut,
     authError,
 } from "./authSlice";
+import { clearProfile } from "../profile/profileSlice";
 
 export function loadUser() {
     return async function (dispatch) {
@@ -77,6 +78,7 @@ export function logout() {
     return function (dispatch) {
         localStorage.removeItem("token");
         dispatch(userLoggedOut());
+        dispatch(clearProfile());
         dispatch(setAlert("Logged out successfully", "success"));
     };
 }
