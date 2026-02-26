@@ -27,6 +27,14 @@ export default function Navbar() {
             >
                 <Users className="w-5 h-5" />
                 <span>Dashboard</span>
+            </button>        
+            <button
+                type="button"
+                onClick={() => navigate("/profile")}
+                className="flex items-center gap-2 hover:text-blue-400 transition-colors"
+            >
+                <UserPlus className="w-5 h-5" />
+                <span>Profile</span>
             </button>
             <button
                 type="button"

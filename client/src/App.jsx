@@ -10,6 +10,8 @@ import store from "./redux/app/store";
 import { loadUser } from "./redux/features/auth/auth";
 import Dashboard from "./components/dashboard/Dashboard";
 import ProtectedRoute from "./components/routing/ProtectedRoute";
+import Profile from "./components/profile/Profile";
+import CreateProfile from "./components/profile/CreateProfile";
 
 function AppContent() {
     const dispatch = useDispatch();
@@ -35,6 +37,22 @@ function AppContent() {
                     element={
                         <ProtectedRoute>
                             <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <Profile />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/create-profile"
+                    element={
+                        <ProtectedRoute>
+                            <CreateProfile />
                         </ProtectedRoute>
                     }
                 />
