@@ -84,7 +84,7 @@ Some profile endpoints instead return:
   ],
   "social": {
     "youtube": "string",
-    "twitter": "string",
+    "x": "string",
     "facebook": "string",
     "linkedin": "string",
     "instagram": "string"
@@ -308,7 +308,7 @@ Body:
   "bio": "string",
   "githubusername": "string",
   "youtube": "string",
-  "twitter": "string",
+  "x": "string",
   "facebook": "string",
   "linkedin": "string",
   "instagram": "string"

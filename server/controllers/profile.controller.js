@@ -44,7 +44,7 @@ export async function uploadProfile(req, res) {
         bio,
         githubusername,
         youtube,
-        twitter,
+        x,
         facebook,
         linkedin,
         instagram,
@@ -66,7 +66,7 @@ export async function uploadProfile(req, res) {
     //build social object
     profileFields.social = {};
     if (youtube) profileFields.social.youtube = youtube;
-    if (twitter) profileFields.social.twitter = twitter;
+    if (x) profileFields.social.x = x;
     if (facebook) profileFields.social.facebook = facebook;
     if (linkedin) profileFields.social.linkedin = linkedin;
     if (instagram) profileFields.social.instagram = instagram;
