@@ -13,8 +13,11 @@ import {
     Youtube,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { createOrUpdateProfile } from "../../redux/features/profile/profile";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+    createOrUpdateProfile,
+    loadMyProfile,
+} from "../../redux/features/profile/profile";
 
 const statusOptions = [
     "Developer",
@@ -64,15 +67,53 @@ function IconInput({
 export default function CreateProfile() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
+    const isEditMode = location.pathname === "/edit-profile";
     const [displaySocialInputs, setDisplaySocialInputs] = useState(false);
     const [formData, setFormData] = useState(initialFormData);
-    const { loading } = useSelector(function (state) {
+    const { loading, profile } = useSelector(function (state) {
         return state.profile;
     });
 
     useEffect(function () {
-        document.title = "Create Profile";
-    }, []);
+        document.title = isEditMode ? "Edit Profile" : "Create Profile";
+    }, [isEditMode]);
+
+    useEffect(
+        function () {
+            if (isEditMode && !profile) {
+                dispatch(loadMyProfile());
+            }
+        },
+        [dispatch, isEditMode, profile],
+    );
+
+    useEffect(
+        function () {
+            if (!profile) return;
+            const filled = {
+                status: profile.status || "",
+                company: profile.company || "",
+                website: profile.website || "",
+                location: profile.location || "",
+                skills: Array.isArray(profile.skills)
+                    ? profile.skills.join(", ")
+                    : "",
+                githubusername: profile.githubusername || "",
+                bio: profile.bio || "",
+                youtube: profile.social?.youtube || "",
+                x: profile.social?.x || "",
+                facebook: profile.social?.facebook || "",
+                linkedin: profile.social?.linkedin || "",
+                instagram: profile.social?.instagram || "",
+            };
+            setFormData(filled);
+            if (Object.values(profile.social || {}).some(Boolean)) {
+                setDisplaySocialInputs(true);
+            }
+        },
+        [profile],
+    );
 
     function onChange(event) {
         setFormData(function (prev) {
@@ -91,7 +132,9 @@ export default function CreateProfile() {
                 <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">
-                            Create Your Profile
+                            {isEditMode
+                                ? "Update Your Profile"
+                                : "Create Your Profile"}
                         </h1>
                         <p className="mt-1 text-sm text-gray-600">
                             Add your professional details so others can find and connect with you.
@@ -325,7 +368,11 @@ export default function CreateProfile() {
                             disabled={loading}
                             className="rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
                         >
-                            {loading ? "Saving..." : "Create Profile"}
+                            {loading
+                                ? "Saving..."
+                                : isEditMode
+                                  ? "Update Profile"
+                                  : "Create Profile"}
                         </button>
                         <Link
                             to="/profile"

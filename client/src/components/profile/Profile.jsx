@@ -80,6 +80,14 @@ export default function Profile() {
                 >
                     ← Back to Dashboard
                 </Link>
+                <div className="mb-6 flex justify-end">
+                    <Link
+                        to="/edit-profile"
+                        className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                    >
+                        Edit Profile
+                    </Link>
+                </div>
 
                 {/* Profile Header */}
                 <div className="bg-white rounded-lg shadow p-8 mb-6">

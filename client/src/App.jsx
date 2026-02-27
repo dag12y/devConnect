@@ -56,6 +56,14 @@ function AppContent() {
                         </ProtectedRoute>
                     }
                 />
+                <Route
+                    path="/edit-profile"
+                    element={
+                        <ProtectedRoute>
+                            <CreateProfile />
+                        </ProtectedRoute>
+                    }
+                />
             </Routes>
         </Router>
     );
