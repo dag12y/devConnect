@@ -12,7 +12,9 @@ import {
     MapPin,
     Youtube,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { createOrUpdateProfile } from "../../redux/features/profile/profile";
 
 const statusOptions = [
     "Developer",
@@ -60,8 +62,13 @@ function IconInput({
 }
 
 export default function CreateProfile() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [displaySocialInputs, setDisplaySocialInputs] = useState(false);
     const [formData, setFormData] = useState(initialFormData);
+    const { loading } = useSelector(function (state) {
+        return state.profile;
+    });
 
     useEffect(function () {
         document.title = "Create Profile";
@@ -75,8 +82,7 @@ export default function CreateProfile() {
 
     function onSubmit(event) {
         event.preventDefault();
-        console.log(formData);
-        
+        dispatch(createOrUpdateProfile(formData, navigate));
     }
 
     return (
@@ -316,9 +322,10 @@ export default function CreateProfile() {
                     <div className="flex gap-3 pt-2">
                         <button
                             type="submit"
-                            className="rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                            disabled={loading}
+                            className="rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
                         >
-                            Create Profile
+                            {loading ? "Saving..." : "Create Profile"}
                         </button>
                         <Link
                             to="/profile"
