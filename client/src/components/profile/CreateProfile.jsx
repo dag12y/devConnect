@@ -71,7 +71,7 @@ export default function CreateProfile() {
     const isEditMode = location.pathname === "/edit-profile";
     const [displaySocialInputs, setDisplaySocialInputs] = useState(false);
     const [formData, setFormData] = useState(initialFormData);
-    const { loading, profile } = useSelector(function (state) {
+    const { loading, myProfile } = useSelector(function (state) {
         return state.profile;
     });
 
@@ -81,38 +81,38 @@ export default function CreateProfile() {
 
     useEffect(
         function () {
-            if (isEditMode && !profile) {
+            if (isEditMode && !myProfile) {
                 dispatch(loadMyProfile());
             }
         },
-        [dispatch, isEditMode, profile],
+        [dispatch, isEditMode, myProfile],
     );
 
     useEffect(
         function () {
-            if (!profile) return;
+            if (!myProfile) return;
             const filled = {
-                status: profile.status || "",
-                company: profile.company || "",
-                website: profile.website || "",
-                location: profile.location || "",
-                skills: Array.isArray(profile.skills)
-                    ? profile.skills.join(", ")
+                status: myProfile.status || "",
+                company: myProfile.company || "",
+                website: myProfile.website || "",
+                location: myProfile.location || "",
+                skills: Array.isArray(myProfile.skills)
+                    ? myProfile.skills.join(", ")
                     : "",
-                githubusername: profile.githubusername || "",
-                bio: profile.bio || "",
-                youtube: profile.social?.youtube || "",
-                x: profile.social?.x || "",
-                facebook: profile.social?.facebook || "",
-                linkedin: profile.social?.linkedin || "",
-                instagram: profile.social?.instagram || "",
+                githubusername: myProfile.githubusername || "",
+                bio: myProfile.bio || "",
+                youtube: myProfile.social?.youtube || "",
+                x: myProfile.social?.x || "",
+                facebook: myProfile.social?.facebook || "",
+                linkedin: myProfile.social?.linkedin || "",
+                instagram: myProfile.social?.instagram || "",
             };
             setFormData(filled);
-            if (Object.values(profile.social || {}).some(Boolean)) {
+            if (Object.values(myProfile.social || {}).some(Boolean)) {
                 setDisplaySocialInputs(true);
             }
         },
-        [profile],
+        [myProfile],
     );
 
     function onChange(event) {

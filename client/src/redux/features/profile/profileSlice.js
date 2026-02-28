@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    profile: null,
+    myProfile: null,
+    viewedProfile: null,
     profiles: [],
-    repos:[],
+    repos: [],
     loading: false,
     error: null,
 };
@@ -17,31 +18,48 @@ const profileSlice = createSlice({
             state.error = null;
         },
         profileLoaded(state, action) {
-            state.profile = action.payload;
+            state.myProfile = action.payload;
             state.loading = false;
             state.error = null;
         },
         createProfile(state, action) {
-            state.profile = action.payload;
+            state.myProfile = action.payload;
             state.loading = false;
             state.error = null;
         },
-        clearProfile(state) {   
-            state.profile = null;
+        viewedProfileLoaded(state, action) {
+            state.viewedProfile = action.payload;
+            state.loading = false;
+            state.error = null;
+        },
+        profilesLoaded(state, action) {
+            state.profiles = action.payload;
+            state.loading = false;
+            state.error = null;
+        },
+        clearProfile(state) {
+            state.myProfile = null;
+            state.viewedProfile = null;
             state.profiles = [];
             state.repos = [];
             state.loading = false;
             state.error = null;
         },
         profileError(state, action) {
-            state.profile = null;
             state.loading = false;
             state.error = action.payload || "Failed to load profile";
         },
     },
 });
 
-export const { profileRequest, profileLoaded, createProfile, clearProfile, profileError } =
-    profileSlice.actions;
+export const {
+    profileRequest,
+    profileLoaded,
+    createProfile,
+    viewedProfileLoaded,
+    profilesLoaded,
+    clearProfile,
+    profileError,
+} = profileSlice.actions;
 
 export default profileSlice.reducer;
