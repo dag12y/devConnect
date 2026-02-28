@@ -50,7 +50,7 @@ function AppContent() {
                     }
                 />
                 <Route
-                    path="/profile/:user_id"
+                    path="/profile/:id"
                     element={
                         <ProtectedRoute>
                             <ProfileView />

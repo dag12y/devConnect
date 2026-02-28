@@ -39,10 +39,15 @@ router.post(
 //@access Public
 router.get("/", getAllProfile);
 
-//@route Get api/profile/:user_id
+//@route Get api/profile/github/:username
+// @desc Get user repos from Github
+// @access Public
+router.get("/github/:username", getGithubRepos);
+
+//@route Get api/profile/:id
 //@desc get profile by user id
 //@access Public
-router.get("/:user_id", getProfileByUserId);
+router.get("/:id", getProfileByUserId);
 
 //@route Delete api/profile
 //@desc delete profile,user & posts
@@ -88,10 +93,5 @@ router.put(
 // @desc Delete education from profile
 // @access Private
 router.delete("/education/:edu_id", authMiddleware, deleteEducation);
-
-//@route Get api/profile/github/:username
-// @desc Get user repos from Github
-// @access Public
-router.get("/github/:username", getGithubRepos);
 
 export default router;

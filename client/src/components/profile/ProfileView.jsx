@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
     AtSign,
     Briefcase,
@@ -14,6 +14,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
+import { toast } from "sonner";
 import {
     loadMyProfile,
     loadProfileByUserId,
@@ -21,12 +22,32 @@ import {
 
 export default function Profile() {
     const dispatch = useDispatch();
-    const { user_id } = useParams();
+    const { id } = useParams();
     const { loading, myProfile, viewedProfile, repos, error } = useSelector(function (state) {
         return state.profile;
     });
-    const profile = user_id ? viewedProfile : myProfile;
-    const isViewingOtherProfile = Boolean(user_id);
+    const profile = id ? viewedProfile : myProfile;
+    const isViewingOtherProfile = Boolean(id);
+    const [showExperienceForm, setShowExperienceForm] = useState(false);
+    const [showEducationForm, setShowEducationForm] = useState(false);
+    const [experienceForm, setExperienceForm] = useState({
+        title: "",
+        company: "",
+        location: "",
+        from: "",
+        to: "",
+        current: false,
+        description: "",
+    });
+    const [educationForm, setEducationForm] = useState({
+        school: "",
+        degree: "",
+        fieldofstudy: "",
+        from: "",
+        to: "",
+        current: false,
+        description: "",
+    });
     const githubRepos = Array.isArray(repos) ? repos : [];
     const socialIcons = {
         youtube: Youtube,
@@ -39,11 +60,43 @@ export default function Profile() {
     useEffect(() => {
         document.title = "Profile";
         if (isViewingOtherProfile) {
-            dispatch(loadProfileByUserId(user_id));
+            dispatch(loadProfileByUserId(id));
             return;
         }
         dispatch(loadMyProfile());
-    }, [dispatch, isViewingOtherProfile, user_id]);
+    }, [dispatch, id, isViewingOtherProfile]);
+
+    function handleExperienceChange(event) {
+        const { name, type, checked, value } = event.target;
+        setExperienceForm(function (previous) {
+            return {
+                ...previous,
+                [name]: type === "checkbox" ? checked : value,
+            };
+        });
+    }
+
+    function handleEducationChange(event) {
+        const { name, type, checked, value } = event.target;
+        setEducationForm(function (previous) {
+            return {
+                ...previous,
+                [name]: type === "checkbox" ? checked : value,
+            };
+        });
+    }
+
+    function handleExperienceSubmit(event) {
+        event.preventDefault();
+        toast.info("Experience form UI is ready. API submit can be connected next.");
+        setShowExperienceForm(false);
+    }
+
+    function handleEducationSubmit(event) {
+        event.preventDefault();
+        toast.info("Education form UI is ready. API submit can be connected next.");
+        setShowEducationForm(false);
+    }
 
     if (loading) {
         return (
@@ -78,6 +131,15 @@ export default function Profile() {
                 >
                     Create Profile
                 </Link>
+            </div>
+        );
+    }
+
+    if (isViewingOtherProfile && !profile && !error) {
+        return (
+            <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-gray-700">
+                <ClipLoader color="#3B82F6" size={48} />
+                <span className="text-lg font-semibold">Loading profile...</span>
             </div>
         );
     }
@@ -117,7 +179,7 @@ export default function Profile() {
                             {profile?.user?.name}
                         </h1>
                         <p className="text-xl text-gray-600 mt-2">
-                            {profile.status}
+                            {profile?.status}
                         </p>
                         {profile.company && (
                             <p className="text-gray-500">
@@ -192,6 +254,168 @@ export default function Profile() {
                                     {skill}
                                 </span>
                             ))}
+                        </div>
+                    </div>
+                )}
+
+                {!isViewingOtherProfile && (
+                    <div className="grid gap-6 md:grid-cols-2 mb-6">
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <div className="mb-4 flex items-center justify-between">
+                                <h2 className="text-xl font-bold text-gray-900">
+                                    Add Experience
+                                </h2>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowExperienceForm(!showExperienceForm)}
+                                    className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+                                >
+                                    {showExperienceForm ? "Hide" : "Open"}
+                                </button>
+                            </div>
+                            {showExperienceForm && (
+                                <form className="space-y-3" onSubmit={handleExperienceSubmit}>
+                                    <input
+                                        name="title"
+                                        value={experienceForm.title}
+                                        onChange={handleExperienceChange}
+                                        placeholder="Job title"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                    />
+                                    <input
+                                        name="company"
+                                        value={experienceForm.company}
+                                        onChange={handleExperienceChange}
+                                        placeholder="Company"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                    />
+                                    <input
+                                        name="location"
+                                        value={experienceForm.location}
+                                        onChange={handleExperienceChange}
+                                        placeholder="Location"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                    />
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <input
+                                            type="date"
+                                            name="from"
+                                            value={experienceForm.from}
+                                            onChange={handleExperienceChange}
+                                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                        />
+                                        <input
+                                            type="date"
+                                            name="to"
+                                            value={experienceForm.to}
+                                            onChange={handleExperienceChange}
+                                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                        />
+                                    </div>
+                                    <label className="flex items-center gap-2 text-sm text-gray-700">
+                                        <input
+                                            type="checkbox"
+                                            name="current"
+                                            checked={experienceForm.current}
+                                            onChange={handleExperienceChange}
+                                        />
+                                        Current Job
+                                    </label>
+                                    <textarea
+                                        name="description"
+                                        value={experienceForm.description}
+                                        onChange={handleExperienceChange}
+                                        rows={3}
+                                        placeholder="Description"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black transition-colors"
+                                    >
+                                        Save Experience (UI only)
+                                    </button>
+                                </form>
+                            )}
+                        </div>
+
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <div className="mb-4 flex items-center justify-between">
+                                <h2 className="text-xl font-bold text-gray-900">
+                                    Add Education
+                                </h2>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEducationForm(!showEducationForm)}
+                                    className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+                                >
+                                    {showEducationForm ? "Hide" : "Open"}
+                                </button>
+                            </div>
+                            {showEducationForm && (
+                                <form className="space-y-3" onSubmit={handleEducationSubmit}>
+                                    <input
+                                        name="school"
+                                        value={educationForm.school}
+                                        onChange={handleEducationChange}
+                                        placeholder="School"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                    />
+                                    <input
+                                        name="degree"
+                                        value={educationForm.degree}
+                                        onChange={handleEducationChange}
+                                        placeholder="Degree"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                    />
+                                    <input
+                                        name="fieldofstudy"
+                                        value={educationForm.fieldofstudy}
+                                        onChange={handleEducationChange}
+                                        placeholder="Field of study"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                    />
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <input
+                                            type="date"
+                                            name="from"
+                                            value={educationForm.from}
+                                            onChange={handleEducationChange}
+                                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                        />
+                                        <input
+                                            type="date"
+                                            name="to"
+                                            value={educationForm.to}
+                                            onChange={handleEducationChange}
+                                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                        />
+                                    </div>
+                                    <label className="flex items-center gap-2 text-sm text-gray-700">
+                                        <input
+                                            type="checkbox"
+                                            name="current"
+                                            checked={educationForm.current}
+                                            onChange={handleEducationChange}
+                                        />
+                                        Current School
+                                    </label>
+                                    <textarea
+                                        name="description"
+                                        value={educationForm.description}
+                                        onChange={handleEducationChange}
+                                        rows={3}
+                                        placeholder="Program description"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black transition-colors"
+                                    >
+                                        Save Education (UI only)
+                                    </button>
+                                </form>
+                            )}
                         </div>
                     </div>
                 )}

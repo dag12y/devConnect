@@ -114,7 +114,7 @@ export async function getAllProfile(req, res) {
 export async function getProfileByUserId(req, res) {
     try {
         const profile = await Profile.findOne({
-            user: req.params.user_id,
+            user: req.params.id,
         }).populate("user", ["name", "avatar"]);
         if (!profile) {
             return res.status(400).json({
