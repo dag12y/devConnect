@@ -1,7 +1,9 @@
 import axiosInstance, { extractErrorMessages } from "../../../utils/axiosInstance";
 import { setAlert } from "../alert/alert";
+import { userLoggedOut } from "../auth/authSlice";
 import {
     clearRepos,
+    clearProfile,
     createProfile,
     profilesLoaded,
     profileError,
@@ -120,9 +122,8 @@ export function loadGithubRepos(username) {
 export function addExperience(formData) {
     return async function (dispatch) {
         try {
-            const response = await axiosInstance.put("/profile/experience", formData);
-            const profile = response.data?.data || response.data;
-            dispatch(createProfile(profile));
+            await axiosInstance.put("/profile/experience", formData);
+            await dispatch(loadMyProfile());
             dispatch(setAlert("Experience added successfully", "success"));
             return true;
         } catch (error) {
@@ -138,10 +139,62 @@ export function addExperience(formData) {
 export function addEducation(formData) {
     return async function (dispatch) {
         try {
-            const response = await axiosInstance.put("/profile/education", formData);
-            const profile = response.data?.data || response.data;
-            dispatch(createProfile(profile));
+            await axiosInstance.put("/profile/education", formData);
+            await dispatch(loadMyProfile());
             dispatch(setAlert("Education added successfully", "success"));
+            return true;
+        } catch (error) {
+            const messages = extractErrorMessages(error);
+            messages.forEach(function (msg) {
+                dispatch(setAlert(msg, "error"));
+            });
+            return false;
+        }
+    };
+}
+
+export function deleteExperience(expId) {
+    return async function (dispatch) {
+        try {
+            await axiosInstance.delete(`/profile/experience/${expId}`);
+            await dispatch(loadMyProfile());
+            dispatch(setAlert("Experience deleted", "success"));
+            return true;
+        } catch (error) {
+            const messages = extractErrorMessages(error);
+            messages.forEach(function (msg) {
+                dispatch(setAlert(msg, "error"));
+            });
+            return false;
+        }
+    };
+}
+
+export function deleteEducation(eduId) {
+    return async function (dispatch) {
+        try {
+            await axiosInstance.delete(`/profile/education/${eduId}`);
+            await dispatch(loadMyProfile());
+            dispatch(setAlert("Education deleted", "success"));
+            return true;
+        } catch (error) {
+            const messages = extractErrorMessages(error);
+            messages.forEach(function (msg) {
+                dispatch(setAlert(msg, "error"));
+            });
+            return false;
+        }
+    };
+}
+
+export function deleteAccount() {
+    return async function (dispatch) {
+        try {
+            await axiosInstance.delete("/profile");
+            localStorage.removeItem("token");
+            dispatch(clearProfile());
+            dispatch(userLoggedOut());
+            dispatch(setAlert("Account deleted successfully", "success"));
             return true;
         } catch (error) {
             const messages = extractErrorMessages(error);

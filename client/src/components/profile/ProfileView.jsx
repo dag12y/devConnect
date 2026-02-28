@@ -12,12 +12,15 @@ import {
     Youtube,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { toast } from "sonner";
 import {
     addEducation,
     addExperience,
+    deleteAccount,
+    deleteEducation,
+    deleteExperience,
     loadGithubRepos,
     loadMyProfile,
     loadProfileByUserId,
@@ -25,6 +28,7 @@ import {
 
 export default function Profile() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { id } = useParams();
     const { loading, myProfile, viewedProfile, repos, reposLoading, reposError, error } = useSelector(function (state) {
         return state.profile;
@@ -139,6 +143,29 @@ export default function Profile() {
             description: "",
         });
         setShowEducationForm(false);
+    }
+
+    async function handleDeleteExperience(expId) {
+        const confirmed = window.confirm("Delete this experience?");
+        if (!confirmed) return;
+        await dispatch(deleteExperience(expId));
+    }
+
+    async function handleDeleteEducation(eduId) {
+        const confirmed = window.confirm("Delete this education?");
+        if (!confirmed) return;
+        await dispatch(deleteEducation(eduId));
+    }
+
+    async function handleDeleteAccount() {
+        const confirmed = window.confirm(
+            "Delete your account permanently? This cannot be undone.",
+        );
+        if (!confirmed) return;
+        const success = await dispatch(deleteAccount());
+        if (success) {
+            navigate("/");
+        }
     }
 
     if (loading) {
@@ -476,9 +503,20 @@ export default function Profile() {
                                     key={exp._id}
                                     className="border-l-4 border-blue-500 pl-4"
                                 >
-                                    <h3 className="text-xl font-semibold text-gray-900">
-                                        {exp.title}
-                                    </h3>
+                                    <div className="flex items-start justify-between gap-3">
+                                        <h3 className="text-xl font-semibold text-gray-900">
+                                            {exp.title}
+                                        </h3>
+                                        {!isViewingOtherProfile && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteExperience(exp._id)}
+                                                className="rounded-md border border-red-200 px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
+                                            >
+                                                Delete
+                                            </button>
+                                        )}
+                                    </div>
                                     <p className="text-gray-700 font-medium">
                                         {exp.company}
                                     </p>
@@ -526,9 +564,20 @@ export default function Profile() {
                                     key={edu._id}
                                     className="border-l-4 border-green-500 pl-4"
                                 >
-                                    <h3 className="text-xl font-semibold text-gray-900">
-                                        {edu.school}
-                                    </h3>
+                                    <div className="flex items-start justify-between gap-3">
+                                        <h3 className="text-xl font-semibold text-gray-900">
+                                            {edu.school}
+                                        </h3>
+                                        {!isViewingOtherProfile && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteEducation(edu._id)}
+                                                className="rounded-md border border-red-200 px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
+                                            >
+                                                Delete
+                                            </button>
+                                        )}
+                                    </div>
                                     <p className="text-gray-700 font-medium">
                                         {edu.degree}
                                     </p>
@@ -615,6 +664,24 @@ export default function Profile() {
                                 </div>
                             ))}
                         </div>
+                    </div>
+                )}
+
+                {!isViewingOtherProfile && (
+                    <div className="bg-white rounded-lg border border-red-200 p-6 mt-6">
+                        <h2 className="text-xl font-bold text-red-700 mb-2">
+                            Danger Zone
+                        </h2>
+                        <p className="text-sm text-gray-600 mb-4">
+                            Deleting your account removes your profile and user account permanently.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={handleDeleteAccount}
+                            className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+                        >
+                            Delete My Account
+                        </button>
                     </div>
                 )}
             </div>
