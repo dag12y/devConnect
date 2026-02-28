@@ -16,6 +16,9 @@ import { Link, useParams } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { toast } from "sonner";
 import {
+    addEducation,
+    addExperience,
+    loadGithubRepos,
     loadMyProfile,
     loadProfileByUserId,
 } from "../../redux/features/profile/profile";
@@ -23,7 +26,7 @@ import {
 export default function Profile() {
     const dispatch = useDispatch();
     const { id } = useParams();
-    const { loading, myProfile, viewedProfile, repos, error } = useSelector(function (state) {
+    const { loading, myProfile, viewedProfile, repos, reposLoading, reposError, error } = useSelector(function (state) {
         return state.profile;
     });
     const profile = id ? viewedProfile : myProfile;
@@ -66,6 +69,13 @@ export default function Profile() {
         dispatch(loadMyProfile());
     }, [dispatch, id, isViewingOtherProfile]);
 
+    useEffect(
+        function () {
+            dispatch(loadGithubRepos(profile?.githubusername || ""));
+        },
+        [dispatch, profile?.githubusername],
+    );
+
     function handleExperienceChange(event) {
         const { name, type, checked, value } = event.target;
         setExperienceForm(function (previous) {
@@ -86,15 +96,48 @@ export default function Profile() {
         });
     }
 
-    function handleExperienceSubmit(event) {
+    async function handleExperienceSubmit(event) {
         event.preventDefault();
-        toast.info("Experience form UI is ready. API submit can be connected next.");
+        if (!experienceForm.title || !experienceForm.company || !experienceForm.from) {
+            toast.error("Title, company and from date are required");
+            return;
+        }
+        const success = await dispatch(addExperience(experienceForm));
+        if (!success) return;
+        setExperienceForm({
+            title: "",
+            company: "",
+            location: "",
+            from: "",
+            to: "",
+            current: false,
+            description: "",
+        });
         setShowExperienceForm(false);
     }
 
-    function handleEducationSubmit(event) {
+    async function handleEducationSubmit(event) {
         event.preventDefault();
-        toast.info("Education form UI is ready. API submit can be connected next.");
+        if (
+            !educationForm.school ||
+            !educationForm.degree ||
+            !educationForm.fieldofstudy ||
+            !educationForm.from
+        ) {
+            toast.error("School, degree, field of study and from date are required");
+            return;
+        }
+        const success = await dispatch(addEducation(educationForm));
+        if (!success) return;
+        setEducationForm({
+            school: "",
+            degree: "",
+            fieldofstudy: "",
+            from: "",
+            to: "",
+            current: false,
+            description: "",
+        });
         setShowEducationForm(false);
     }
 
@@ -333,7 +376,7 @@ export default function Profile() {
                                         type="submit"
                                         className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black transition-colors"
                                     >
-                                        Save Experience (UI only)
+                                        Save Experience
                                     </button>
                                 </form>
                             )}
@@ -412,7 +455,7 @@ export default function Profile() {
                                         type="submit"
                                         className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black transition-colors"
                                     >
-                                        Save Education (UI only)
+                                        Save Education
                                     </button>
                                 </form>
                             )}
@@ -519,7 +562,17 @@ export default function Profile() {
                 )}
 
                 {/* GitHub Repos */}
-                {githubRepos.length > 0 && (
+                {reposLoading && (
+                    <div className="bg-white rounded-lg shadow p-6 text-center text-gray-600">
+                        Loading GitHub repositories...
+                    </div>
+                )}
+                {!reposLoading && reposError && (
+                    <div className="bg-white rounded-lg shadow p-6 text-center text-red-600">
+                        {reposError}
+                    </div>
+                )}
+                {!reposLoading && !reposError && githubRepos.length > 0 && (
                     <div className="bg-white rounded-lg shadow p-6">
                         <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                             <Github className="w-6 h-6" />

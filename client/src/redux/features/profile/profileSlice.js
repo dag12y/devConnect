@@ -5,6 +5,8 @@ const initialState = {
     viewedProfile: null,
     profiles: [],
     repos: [],
+    reposLoading: false,
+    reposError: null,
     loading: false,
     error: null,
 };
@@ -37,11 +39,32 @@ const profileSlice = createSlice({
             state.loading = false;
             state.error = null;
         },
+        reposRequest(state) {
+            state.reposLoading = true;
+            state.reposError = null;
+        },
+        reposLoaded(state, action) {
+            state.repos = action.payload;
+            state.reposLoading = false;
+            state.reposError = null;
+        },
+        reposError(state, action) {
+            state.repos = [];
+            state.reposLoading = false;
+            state.reposError = action.payload || "Failed to load repositories";
+        },
+        clearRepos(state) {
+            state.repos = [];
+            state.reposLoading = false;
+            state.reposError = null;
+        },
         clearProfile(state) {
             state.myProfile = null;
             state.viewedProfile = null;
             state.profiles = [];
             state.repos = [];
+            state.reposLoading = false;
+            state.reposError = null;
             state.loading = false;
             state.error = null;
         },
@@ -58,6 +81,10 @@ export const {
     createProfile,
     viewedProfileLoaded,
     profilesLoaded,
+    reposRequest,
+    reposLoaded,
+    reposError,
+    clearRepos,
     clearProfile,
     profileError,
 } = profileSlice.actions;

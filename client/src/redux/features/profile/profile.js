@@ -1,11 +1,15 @@
 import axiosInstance, { extractErrorMessages } from "../../../utils/axiosInstance";
 import { setAlert } from "../alert/alert";
 import {
+    clearRepos,
     createProfile,
     profilesLoaded,
     profileError,
     profileLoaded,
     profileRequest,
+    reposError,
+    reposLoaded,
+    reposRequest,
     viewedProfileLoaded,
 } from "./profileSlice";
 
@@ -87,6 +91,63 @@ export function createOrUpdateProfile(formData, navigate) {
                 dispatch(setAlert(msg, "error"));
             });
             dispatch(profileError(messages.join(", ")));
+            return false;
+        }
+    };
+}
+
+export function loadGithubRepos(username) {
+    return async function (dispatch) {
+        if (!username) {
+            dispatch(clearRepos());
+            return false;
+        }
+
+        dispatch(reposRequest());
+        try {
+            const response = await axiosInstance.get(`/profile/github/${username}`);
+            const repos = response.data?.data || [];
+            dispatch(reposLoaded(repos));
+            return true;
+        } catch (error) {
+            const messages = extractErrorMessages(error);
+            dispatch(reposError(messages.join(", ")));
+            return false;
+        }
+    };
+}
+
+export function addExperience(formData) {
+    return async function (dispatch) {
+        try {
+            const response = await axiosInstance.put("/profile/experience", formData);
+            const profile = response.data?.data || response.data;
+            dispatch(createProfile(profile));
+            dispatch(setAlert("Experience added successfully", "success"));
+            return true;
+        } catch (error) {
+            const messages = extractErrorMessages(error);
+            messages.forEach(function (msg) {
+                dispatch(setAlert(msg, "error"));
+            });
+            return false;
+        }
+    };
+}
+
+export function addEducation(formData) {
+    return async function (dispatch) {
+        try {
+            const response = await axiosInstance.put("/profile/education", formData);
+            const profile = response.data?.data || response.data;
+            dispatch(createProfile(profile));
+            dispatch(setAlert("Education added successfully", "success"));
+            return true;
+        } catch (error) {
+            const messages = extractErrorMessages(error);
+            messages.forEach(function (msg) {
+                dispatch(setAlert(msg, "error"));
+            });
             return false;
         }
     };
